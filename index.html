@@ -84,7 +84,7 @@
         var message ;  // = document.getElementById("messageField").value ;
         var chat = false;
         var userSignup = false;
-        var phone, typingStatus, date, time ;
+        var phone, typingStatus, date, time, dToken ;
         var aName, bPhone, cUsername, dPassword, bStatus, cDate, dIP, eTyping ;
         var dateTime, status, readEAOS = false, writeEAOS = false ;
      
@@ -167,9 +167,12 @@
       function sendMessage() {  if(chat) {
             getMessage();
             getDateTime();
+            getToken();
             firebase.database().ref("editAppMessage").set({
-            a_Name: name + " " + time, 
-            b_Message: message 
+            a_Name: name, 
+            b_Message: message, 
+            c_Date: time, 
+            d_Token: dToken
              }); 
             document.getElementById("messageField").value = "";
            // getDateTime();
@@ -186,14 +189,23 @@
               message = document.getElementById("messageField").value ;
               }
         
+        
+        function getMessage() {
+            
+            
+              }
       
         
               // takeSnapshot();
        function takeSnapshot() { 
                var ref = firebase.database().ref("editAppMessage"); 
                ref.on("value", function(snapshot) { newline();
-               snapshot.forEach(function(element) { newline();
-               document.querySelector('#div6').innerHTML += element.val();
+               aName = snapshot.child("a_Name").val();
+               bMessage = snapshot.child("b_Message").val();
+               cDate = snapshot.child("c_Date").val();
+               dToken = snapshot.child("d_Token").val();                            
+             //  snapshot.forEach(function(element) {
+               document.querySelector('#div6').innerHTML += "<br>" + aName + " " + cDate + "<br>" + bMessage + "<br>" ;
                // document.querySelector('#root').innerHTML +=`
                // <div>${element.val()}<\div>
                // ` 
@@ -265,6 +277,37 @@
         
           
         function readEAOTS() { 
+              var bRef = firebase.database().ref("editAppMessageToken"); 
+               bRef.once("value", function(snapshot) {
+               aName = snapshot.child("a_Name").val();
+               bStatus = snapshot.child("b_Status").val();
+               cDate = snapshot.child("c_Date").val();
+               dToken = snapshot.child("d_Token").val();
+              
+              document.querySelector('#div5').innerHTML = aName + " " + bStatus + " " + cDate + " " + dToken ;
+         
+                   
+                   
+                }); 
+               }
+                
+              
+        function writeEAMToken() { 
+              getName();
+          
+              getDateTime();
+           
+              firebase.database().ref("editAppMessageToken").set({
+               a_Name: aName , 
+               b_Status: status , 
+               c_Date: dateTime, 
+               d_Token: dToken
+              
+               });
+              }
+        
+        
+        function readEAMTolen() { 
               var bRef = firebase.database().ref("editAppOnlineTyping"); 
                bRef.once("value", function(snapshot) {
                aName = snapshot.child("a_Name").val();
@@ -291,6 +334,7 @@
               e_Typing: typingStatus
                });
               }
+        
               
         
        function getName() {
